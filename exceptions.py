@@ -1,10 +1,10 @@
 class ResponseStatusError(Exception):
     """Ошибка ответа сервера."""
 
-    pass
-
 
 class HomeworkStatusError(Exception):
     """Ошибка статуса домашней работы."""
 
-    pass
+
+class TelegramMessageSendError(Exception):
+    """Ошибка отправки сообщения в Telegram."""
