@@ -57,22 +57,23 @@ def get_api_answer(current_timestamp: int) -> dict:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
         logging.info(f'Начало запроса к API с параметрами: {params}')
         if response.status_code != HTTPStatus.OK:
+            logging.info(f'Начало запроса к API с параметрами: {params}')
             raise ResponseStatusError('Код ответа сервера не 200')
         return response.json()
-    except ResponseStatusError:
-        raise ResponseStatusError('Код ответа сервера не 200')
     except Exception:
+        logging.info(f'Начало запроса к API с параметрами: {params}')
         raise Exception('Ошибка при запросе к API')
 
 
 def check_response(response: dict) -> list:
     """Проверяем ответ на соответствие требованиям."""
-    if type(response) != dict:
+    if not isinstance(response, dict):
         raise TypeError('В качестве аргумента передан не словарь')
     homeworks = response.get('homeworks')
+    current_date = response.get('current_date')
     if not isinstance(response, dict):
         raise TypeError('В ответе передан неверный тип данных')
-    if 'homeworks' and 'current_date' not in response.keys():
+    if homeworks and current_date not in response.values():
         raise KeyError('Переданы неверные ключи в ответе API')
     if not isinstance(homeworks, list):
         raise TypeError('В списке домашних работ неверный тип данных')
