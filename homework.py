@@ -55,13 +55,12 @@ def get_api_answer(current_timestamp: int) -> dict:
     params = {'from_date': timestamp}
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
-        logging.info(f'Начало запроса к API с параметрами: {params}')
+        logging.info(
+            f'Начало запроса к API с параметрами:{params, HEADERS, ENDPOINT}')
         if response.status_code != HTTPStatus.OK:
-            logging.info(f'Начало запроса к API с параметрами: {params}')
             raise ResponseStatusError('Код ответа сервера не 200')
         return response.json()
     except Exception:
-        logging.info(f'Начало запроса к API с параметрами: {params}')
         raise Exception('Ошибка при запросе к API')
 
 
@@ -71,10 +70,8 @@ def check_response(response: dict) -> list:
         raise TypeError('В качестве аргумента передан не словарь')
     homeworks = response.get('homeworks')
     current_date = response.get('current_date')
-    if not isinstance(response, dict):
-        raise TypeError('В ответе передан неверный тип данных')
-    if homeworks and current_date not in response.values():
-        raise KeyError('Переданы неверные ключи в ответе API')
+    if homeworks is None or current_date is None:
+        raise KeyError('Ключи в ответе API не соответсвуют ожидаемым')
     if not isinstance(homeworks, list):
         raise TypeError('В списке домашних работ неверный тип данных')
     return homeworks
@@ -82,11 +79,11 @@ def check_response(response: dict) -> list:
 
 def parse_status(homework: dict) -> str:
     """Парсим статус домашки."""
-    homework_name = homework['homework_name']
-    homework_status = homework['status']
+    homework_name = homework.get('homework_name')
+    homework_status = homework.get('status')
 
-    if homework_name is None:
-        raise HomeworkStatusError('Пустое значение.')
+    if not homework_name:
+        raise KeyError('Пустое значение.')
     if homework_status not in HOMEWORK_STATUSES:
         message = 'Недокументированный статус домашней работы.'
         raise HomeworkStatusError(message)
@@ -117,7 +114,6 @@ def main():
                 status = parse_status(homeworks[0])
                 send_message(bot, status)
             current_timestamp = response['current_date']
-            time.sleep(RETRY_TIME)
         except TelegramMessageSendError:
             logging.error('Ошибка отправки сообщения в Telegram')
         except Exception as error:
