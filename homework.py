@@ -58,10 +58,20 @@ def get_api_answer(current_timestamp: int) -> dict:
         logging.info(
             f'Начало запроса к API с параметрами:{params, HEADERS, ENDPOINT}')
         if response.status_code != HTTPStatus.OK:
-            raise ResponseStatusError('Код ответа сервера не 200')
+            raise ResponseStatusError(
+                'Ошибка в ответе сервера:'
+                f'Парметры запроса: {params, HEADERS, ENDPOINT}'
+                f'Код ответа сервера: {response.status_code}'
+                f'Причина: {response.reason}'
+                f'Контекст: {response.text}'
+            )
         return response.json()
-    except Exception:
-        raise Exception('Ошибка при запросе к API')
+    except Exception as error:
+        raise Exception(
+            f'Во время подлючения к ендпоинту {ENDPOINT}'
+            f'произошла ошибка: {error}'
+            f'Параметры: {HEADERS, params}'
+        )
 
 
 def check_response(response: dict) -> list:
@@ -83,7 +93,7 @@ def parse_status(homework: dict) -> str:
     homework_status = homework.get('status')
 
     if not homework_name:
-        raise KeyError('Пустое значение.')
+        raise KeyError(f'Пустое значение по ключу {homework_name}')
     if homework_status not in HOMEWORK_STATUSES:
         message = 'Недокументированный статус домашней работы.'
         raise HomeworkStatusError(message)
