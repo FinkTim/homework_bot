@@ -56,6 +56,6 @@ PRACTICUM_TOKEN = 'xx_XxXXXXXXxxxlAAYckQXXXXXDVjqd5RHMITneLQ3iHWFDQtheN_GnI2vY'
 TELEGRAM_CHAT_ID = 0123456789
 ```
 
-# Авторы
+# Автор
 
-* [Shandalii Dmitrii](https://github.com/FinkTim)
+[Shandalii Dmitrii](https://github.com/FinkTim)
